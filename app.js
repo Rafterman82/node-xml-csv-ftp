@@ -18,7 +18,7 @@ var marketingCloud = {
   sftpUrl: process.env.sftpUrl,
   sftpPort: process.env.sftpPort,
   sftpUser: process.env.sftpUser,
-  sftpPassword: process.env.sftpPassword,
+  sftpPassword: process.env.sftpPass,
   xmlUrl: process.env.xmlUrl
 };
 
