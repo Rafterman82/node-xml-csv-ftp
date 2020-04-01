@@ -22,6 +22,8 @@ var marketingCloud = {
   xmlUrl: process.env.xmlUrl
 };
 
+console.dir(marketingCloud);
+
 // Configure Express
 app.set('port', process.env.PORT || 3000);
 //app.use(express.static(path.join(__dirname, 'public')));
@@ -50,7 +52,7 @@ app.get('/readFtpFolder/:folder/:filename/:url', function(req, res) {
 		username: marketingCloud.sftpUser,
 		password: marketingCloud.sftpPassword
 	}).then(() => {
-		return sftp.list("/Import" + req.params.folder + "/" + req.params.filename + "/" + req.params.url);
+		return sftp.list("/Import/" + req.params.folder);
 	}).then(response => {
 		//console.log(data, 'the data info');
 		console.dir(response);
