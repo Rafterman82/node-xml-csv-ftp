@@ -1,0 +1,23 @@
+{
+  "name": "convertxml2csv2ftp",
+  "version": "1.0.0",
+  "description": "Simple node app takes xml url, ftp folder location and converts xml to csv",
+  "main": "app.js",
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": "13.10.1"
+  },
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "errorhandler": "^1.5.1",
+    "express": "^4.17.1",
+    "request": "^2.88.2",
+    "require": "^2.4.20",
+    "ssh2-sftp-client": "^5.1.2"
+  }
+}
+
