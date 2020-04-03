@@ -88,7 +88,9 @@ const getData = async url => {
 };
 
 
-const parseXml = async (payload, filename) => {
+const parseXml = async (filename) => {
+	console.dir("Filename: ");
+	console.dir(filename);
 	try {
     	var xmlfile = __dirname + "/jobs.xml";
     	fs.readFile(xmlfile, "utf-8", function (error, text) {
@@ -132,6 +134,8 @@ const parseXml = async (payload, filename) => {
                 		]
                 	})
                 	let fileNameString = filename + "_" + dateString + ".csv";
+                	console.dir("The filename string is");
+                	console.dir(fileNameString);
 					writer.pipe(fs.createWriteStream(fileNameString));
 
                 	for ( var i = 0; i < jobsObject.length; i++) {
@@ -167,7 +171,7 @@ const parseXml = async (payload, filename) => {
                 		}
                 	}
                 	writer.end();
-                	console.dir(jobs);
+                	//console.dir(jobs);
                 	return fileNameString;
             	});
         	}
@@ -178,9 +182,9 @@ const parseXml = async (payload, filename) => {
 }
 
 const sendFile = async (folder, file) => {
-	console.dir("Folder");
+	console.dir("Folder (185)");
 	console.dir(folder);
-	console.dir("Filename");
+	console.dir("Filename (187)");
 	console.dir(file);
 	try {
 		console.dir("making sftp connection");
@@ -208,13 +212,15 @@ const sendFile = async (folder, file) => {
 	}
 }
 
-app.get('/readFtpFolder/:folder/:filename/:url', async function(request, response) {
+app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 
 	console.dir("Folder is " + request.params.folder + " | Filename I will use is " + request.params.filename);
 	const queryObject = url.parse(request.url,true).query;
+	console.dir("URL is :");
+	console.dir(queryObject.url);
 	const getXmlJobsFile = await getData(queryObject.url);
-	const parseThisXml = await parseXml(getXmlJobsFile, request.params.filename);
-	const sendThisFile = await sendFile(parseThisXml, request.params.folder);
+	const parseThisXml = await parseXml(request.params.filename);
+	const sendThisFile = await sendFile(request.params.folder, request.params.filename);
 	response.send({"success": "true"});
 
 });
