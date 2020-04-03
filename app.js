@@ -78,7 +78,7 @@ async function getData(url) {
   try {
     const response = await axios.get("https://www." + url);
     const data = response.data;
-    fs.writeFile('./xml/jobs.xml', data, function (err) {
+    fs.writeFile('./xml/jobs_new.xml', data, function (err) {
   		if (err) {
   			return console.log(err);
   		} else {
