@@ -203,7 +203,7 @@ async function sendFile(folder, file) {
 			let remote = 'Import/' + folder + '/' + file;
 			console.dir("remote path location");
 			console.dir(remote);
-			return sftp.put("jobs.xml", remote);
+			return sftp.put("./csv/" + file, remote);
 		}).then(() => {
 			return sftp.end();
 		})
@@ -235,7 +235,7 @@ app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 		
 		const getXmlJobsFile = await getData(queryObject.url);
 		const parseThisXml = await parseXml(request.params.filename);
-		//const sendThisFile = await sendFile(request.params.folder, request.params.filename);
+		const sendThisFile = await sendFile(request.params.folder, parseThisXml);
 		console.dir(fileList("xml"));
 		console.dir(fileList("csv"));
 		response.send({"success": "true"});
