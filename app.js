@@ -18,6 +18,7 @@ var writer 				= csvWriter()
 var fs 					= require('fs');
 var xml2js       		= require('xml2js');
 var parser       		= new xml2js.Parser();
+const process = require('process');
 var returnedFiles;
 
 let date_ob = new Date();
@@ -46,6 +47,9 @@ var marketingCloud = {
 };
 
 console.dir(marketingCloud);
+console.log("Current working directory: ", 
+          process.cwd());
+
 
 // Configure Express
 app.set('port', process.env.PORT || 3000);
@@ -74,7 +78,7 @@ async function getData(url) {
   try {
     const response = await axios.get("https://www." + url);
     const data = response.data;
-    fs.writeFile('jobs.xml', data, function (err) {
+    fs.writeFile('xml/jobs.xml', data, function (err) {
   		if (err) {
   			return console.log(err);
   		} else {
@@ -92,14 +96,14 @@ async function parseXml(filename) {
 	console.dir("Filename: ");
 	console.dir(filename);
 	try {
-    	var xmlfile = "jobs.xml";
+    	var xmlfile = "xml/jobs.xml";
     	fs.readFile(xmlfile, "utf-8", function (error, text) {
         	if (error) {
             	throw error;
         	} else {
             	parser.parseString(text, function (err, result) {
-                	console.dir(result.jobs.job);
-                	console.dir(result.jobs.job.length);
+                	console.dir(result);
+                	//console.dir(result.jobs.job.length);
                 	/*var jobsObject = result.jobs.job;
 
                 	var jobs = [];
@@ -221,7 +225,23 @@ app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 
 	try {
 		const getXmlJobsFile = await getData(queryObject.url);
-		const parseThisXml = await parseXml(request.params.filename);
+
+		const directoryPath = path.join(__dirname, 'xml');
+
+		//passsing directoryPath and callback function
+		fs.readdir(directoryPath, function (err, files) {
+		    //handling error
+		    if (err) {
+		        return console.log('Unable to scan directory: ' + err);
+		    } 
+		    //listing all files using forEach
+		    files.forEach(function (file) {
+		        // Do whatever you want to do with the file
+		        console.log(file); 
+		    });
+		});
+		
+		//const parseThisXml = await parseXml(request.params.filename);
 		//const sendThisFile = await sendFile(request.params.folder, request.params.filename);
 		response.send({"success": "true"});
 	} catch(e) {
