@@ -216,6 +216,14 @@ async function sendFile(folder, file) {
 	}
 }
 
+function fileList(dir) {
+  return fs.readdirSync(dir).reduce(function(list, file) {
+    var name = path.join(dir, file);
+    var isDir = fs.statSync(name).isDirectory();
+    return list.concat(isDir ? fileList(name) : [name]);
+  }, []);
+}
+
 app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 
 	console.dir("Folder is " + request.params.folder + " | Filename I will use is " + request.params.filename);
@@ -224,25 +232,12 @@ app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 	console.dir(queryObject.url);
 
 	try {
+		
 		const getXmlJobsFile = await getData(queryObject.url);
-
-		const directoryPath = path.join(__dirname, 'xml');
-
-		//passsing directoryPath and callback function
-		fs.readdir(directoryPath, function (err, files) {
-		    //handling error
-		    if (err) {
-		        return console.dir('Unable to scan directory: ' + err);
-		    } 
-		    //listing all files using forEach
-		    files.forEach(function (file) {
-		        // Do whatever you want to do with the file
-		        console.dir(file); 
-		    });
-		});
-
 		const parseThisXml = await parseXml(request.params.filename);
 		//const sendThisFile = await sendFile(request.params.folder, request.params.filename);
+		console.dir(fileList("xml"));
+		console.dir(fileList("csv"));
 		response.send({"success": "true"});
 	} catch(e) {
 		console.dir(e);
