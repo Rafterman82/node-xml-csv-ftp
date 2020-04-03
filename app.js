@@ -167,7 +167,7 @@ const parseXml = async (payload, filename) => {
                 		}
                 	}
                 	writer.end();
-                	//console.dir(jobs);
+                	console.dir(jobs);
                 	return fileNameString;
             	});
         	}
@@ -178,7 +178,12 @@ const parseXml = async (payload, filename) => {
 }
 
 const sendFile = async (folder, file) => {
+	console.dir("Folder");
+	console.dir(folder);
+	console.dir("Filename");
+	console.dir(file);
 	try {
+		console.dir("making sftp connection");
 		// access SFTP site
 		sftp.connect({
 			host: marketingCloud.sftpUrl,
@@ -186,8 +191,11 @@ const sendFile = async (folder, file) => {
 			username: marketingCloud.sftpUser,
 			password: marketingCloud.sftpPassword
 		}).then(() => {
+			console.dir("Made connection");
 			let remote = 'Import/' + folder + '/' + file;
-			return sftp.put(__dirname + file, remote);
+			console.dir("remote path location");
+			console.dir(remote);
+			return sftp.put("jobs.xml", remote);
 		}).then(() => {
 			return sftp.end();
 		})
