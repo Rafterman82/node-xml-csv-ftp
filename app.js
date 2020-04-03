@@ -92,15 +92,15 @@ async function parseXml(filename) {
 	console.dir("Filename: ");
 	console.dir(filename);
 	try {
-    	var xmlfile = __dirname + "/jobs.xml";
+    	var xmlfile = "jobs.xml";
     	fs.readFile(xmlfile, "utf-8", function (error, text) {
         	if (error) {
             	throw error;
         	} else {
             	parser.parseString(text, function (err, result) {
-                	//console.dir(result.jobs.job);
-                	//console.dir(result.jobs.job.length);
-                	var jobsObject = result.jobs.job;
+                	console.dir(result.jobs.job);
+                	console.dir(result.jobs.job.length);
+                	/*var jobsObject = result.jobs.job;
 
                 	var jobs = [];
 
@@ -172,7 +172,7 @@ async function parseXml(filename) {
                 	}
                 	writer.end();
                 	//console.dir(jobs);
-                	return fileNameString;
+                	return fileNameString;*/
             	});
         	}
         });
@@ -222,7 +222,7 @@ app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 	try {
 		const getXmlJobsFile = await getData(queryObject.url);
 		const parseThisXml = await parseXml(request.params.filename);
-		const sendThisFile = await sendFile(request.params.folder, request.params.filename);
+		//const sendThisFile = await sendFile(request.params.folder, request.params.filename);
 		response.send({"success": "true"});
 	} catch(e) {
 		console.dir(e);
