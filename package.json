@@ -12,12 +12,16 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "body-parser": "^1.19.0",
+    "csv-write-stream": "^2.0.0",
+    "csv-writer": "^1.6.0",
     "errorhandler": "^1.5.1",
     "express": "^4.17.1",
+    "node-xml-stream": "^1.0.2",
     "request": "^2.88.2",
     "require": "^2.4.20",
-    "ssh2-sftp-client": "^5.1.2"
+    "ssh2-sftp-client": "^5.1.2",
+    "xml2js": "^0.4.23"
   }
 }
-
