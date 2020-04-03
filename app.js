@@ -5,28 +5,44 @@ var express     		= require('express');
 var bodyParser  		= require('body-parser');
 var errorhandler 		= require('errorhandler');
 var http        		= require('http');
+const url 				= require('url');
 var path        		= require('path');
 var request     		= require('request');
 var urlencodedparser 	= bodyParser.urlencoded({extended:false});
 var app 				= express();
 var Client 				= require('ssh2-sftp-client');
 let sftp 				= new Client();
-var returnedFiles;
 const axios 			= require('axios');
-var csvWriter = require('csv-write-stream')
-var writer = csvWriter()
+var csvWriter 			= require('csv-write-stream')
+var writer 				= csvWriter()
+var fs 					= require('fs');
+var xml2js       		= require('xml2js');
+var parser       		= new xml2js.Parser();
+var returnedFiles;
 
-var fs = require('fs');
-var xml2js       = require('xml2js');
-var parser       = new xml2js.Parser();
+let date_ob = new Date();
+// current date
+// adjust 0 before single digit date
+let date = ("0" + date_ob.getDate()).slice(-2);
+// current month
+let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+// current year
+let year = date_ob.getFullYear();
+// current hours
+let hours = date_ob.getHours();
+// current minutes
+let minutes = date_ob.getMinutes();
+// current seconds
+let seconds = date_ob.getSeconds();
+
+let dateString = year + month + date + "_" + hours + minutes  + seconds;
 
 // access Heroku variables
 var marketingCloud = {
-  sftpUrl: process.env.sftpUrl,
-  sftpPort: process.env.sftpPort,
-  sftpUser: process.env.sftpUser,
-  sftpPassword: process.env.sftpPass,
-  xmlUrl: process.env.xmlUrl
+	sftpUrl: process.env.sftpUrl,
+	sftpPort: process.env.sftpPort,
+	sftpUser: process.env.sftpUser,
+	sftpPassword: process.env.sftpPass
 };
 
 console.dir(marketingCloud);
@@ -41,15 +57,11 @@ if ('development' == app.get('env')) {
 }
 
 function truncateString(str, num) {
-  // If the length of str is less than or equal to num
-  // just return str--don't truncate it.
-  if (str.length <= num) {
-    return str
-  }
-  // Return str truncated with '...' concatenated to the end of str.
-  return str.slice(0, num)
+	if (str.length <= num) {
+	return str
+	}
+	return str.slice(0, num)
 }
-
 
 // listening port
 http.createServer(app).listen(app.get('port'), function(){
@@ -58,13 +70,11 @@ http.createServer(app).listen(app.get('port'), function(){
 
 app.get('/', (request, response) => response.send('Hello World!'));
 
-const url = "https://www.michaelpage.pl/sites/michaelpage.pl/files/reports/job_advert_xml/jobs.xml";
-
 const getData = async url => {
   try {
-    const response = await axios.get(url);
+    const response = await axios.get("https://www." + url);
     const data = response.data;
-    fs.writeFile('testFile.xml', data, function (err) {
+    fs.writeFile('jobs.xml', data, function (err) {
   		if (err) {
   			return console.log(err);
   		} else {
@@ -78,9 +88,9 @@ const getData = async url => {
 };
 
 
-const parseXml = async payload => {
+const parseXml = async (payload, filename) => {
 	try {
-    	var xmlfile = __dirname + "/testFile.xml";
+    	var xmlfile = __dirname + "/jobs.xml";
     	fs.readFile(xmlfile, "utf-8", function (error, text) {
         	if (error) {
             	throw error;
@@ -121,9 +131,8 @@ const parseXml = async payload => {
                 			"job_detail_url"
                 		]
                 	})
-					writer.pipe(fs.createWriteStream('out.csv'));
-		truncateString("A-tisket a-tasket A green and yellow basket", 8);
-					
+                	let fileNameString = filename + "_" + dateString + ".csv";
+					writer.pipe(fs.createWriteStream(fileNameString));
 
                 	for ( var i = 0; i < jobsObject.length; i++) {
                 		if ( jobsObject[i] ) {
@@ -153,77 +162,51 @@ const parseXml = async payload => {
 		                		"location_term": 	jobsObject[i].location[0].term[0],
 		                		"location_spare":   jobsObject[i].location[0].text[0],
 		                		"job_detail_url":   jobsObject[i].Job_Detail_URL[0],
-
                 			}
                 			writer.write(jobs[i]);
                 		}
-
-
                 	}
                 	writer.end();
-                	console.dir(jobs);
-
-
+                	//console.dir(jobs);
+                	return fileNameString;
             	});
         	}
         });
-
 	} catch(error) {
 		console.dir(error);
 	}
 }
 
-app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
+const sendFile = async (folder, file) => {
+	try {
+		// access SFTP site
+		sftp.connect({
+			host: marketingCloud.sftpUrl,
+			port: marketingCloud.sftpPort,
+			username: marketingCloud.sftpUser,
+			password: marketingCloud.sftpPassword
+		}).then(() => {
+			let remote = 'Import/' + folder + '/' + file;
+			return sftp.put(__dirname + file, remote);
+		}).then(() => {
+			return sftp.end();
+		})
+		.catch(err => {
+			console.error(err.message);
+		});
+
+	} catch(e) {
+
+	}
+}
+
+app.get('/readFtpFolder/:folder/:filename/:url', async function(request, response) {
 
 	console.dir("Folder is " + request.params.folder + " | Filename I will use is " + request.params.filename);
-	const getXmlJobsFile = await getData(url);
-	const parseThisXml = await parseXml(getXmlJobsFile);
-	
+	const queryObject = url.parse(request.url,true).query;
+	const getXmlJobsFile = await getData(queryObject.url);
+	const parseThisXml = await parseXml(getXmlJobsFile, request.params.filename);
+	const sendThisFile = await sendFile(parseThisXml, request.params.folder);
 	response.send({"success": "true"});
-
-
-	// access SFTP site
-	
-	sftp.connect({
-		host: marketingCloud.sftpUrl,
-		port: marketingCloud.sftpPort,
-		username: marketingCloud.sftpUser,
-		password: marketingCloud.sftpPassword
-	}).then(() => {
-		return sftp.list("/Import/" + req.params.folder);
-	}).then(response => {
-		//console.log(data, 'the data info');
-		console.dir(response);
-		//console.dir("Filename is " + response[0]['name']);
-		// loop through results, make sure
-		var highestTimestamp = 0;
-		var fileName;
-		var i = 0 ;
-		for ( i = 0; i < response.length; i++ ) {
-			console.dir("Filename is " + response[i]['name']);
-			console.dir("Timestamp for this row " + response[i]['modifyTime']);
-
-			if ( response[i]['modifyTime'] > highestTimestamp ) {
-	        	highestTimestamp = response[i]['modifyTime'];
-	        	
-	        	console.dir(response[i]['name']);
-	        	fileName = response[i]['name'];
-	    	}
-	    	console.dir("Current highest timestamp is " + highestTimestamp);
-	    	console.dir(highestTimestamp);
-		}
-		sftp.end();
-		console.dir("Filename with highest timestamp is " + fileName);
-		res.send(fileName);
-
-
-	}).catch(err => {
-		sftp.end();
-		console.log(err, 'catch error');
-	});
-
-	
-	return fileName;
-
 
 });
