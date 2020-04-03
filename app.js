@@ -70,7 +70,7 @@ http.createServer(app).listen(app.get('port'), function(){
 
 app.get('/', (request, response) => response.send('Hello World!'));
 
-const getData = async url => {
+async function getData(url) {
   try {
     const response = await axios.get("https://www." + url);
     const data = response.data;
@@ -88,7 +88,7 @@ const getData = async url => {
 };
 
 
-const parseXml = async (filename) => {
+async function parseXml(filename) {
 	console.dir("Filename: ");
 	console.dir(filename);
 	try {
@@ -181,7 +181,7 @@ const parseXml = async (filename) => {
 	}
 }
 
-const sendFile = async (folder, file) => {
+async function sendFile(folder, file) {
 	console.dir("Folder (185)");
 	console.dir(folder);
 	console.dir("Filename (187)");
@@ -218,9 +218,15 @@ app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 	const queryObject = url.parse(request.url,true).query;
 	console.dir("URL is :");
 	console.dir(queryObject.url);
-	const getXmlJobsFile = await getData(queryObject.url);
-	const parseThisXml = await parseXml(request.params.filename);
-	const sendThisFile = await sendFile(request.params.folder, request.params.filename);
-	response.send({"success": "true"});
+
+	try {
+		const getXmlJobsFile = await getData(queryObject.url);
+		const parseThisXml = await parseXml(request.params.filename);
+		const sendThisFile = await sendFile(request.params.folder, request.params.filename);
+		response.send({"success": "true"});
+	} catch(e) {
+		console.dir(e);
+	}
+
 
 });
