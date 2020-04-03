@@ -235,7 +235,9 @@ app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 		
 		const getXmlJobsFile = await getData(queryObject.url);
 		const parseThisXml = await parseXml(request.params.filename);
-		const sendThisFile = await sendFile(request.params.folder, parseThisXml);
+		console.dir("Returned filename");
+		console.dir(parseThisXml);
+		//const sendThisFile = await sendFile(request.params.folder, parseThisXml);
 		console.dir(fileList("xml"));
 		console.dir(fileList("csv"));
 		response.send({"success": "true"});
