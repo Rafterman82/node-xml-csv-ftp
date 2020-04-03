@@ -96,7 +96,7 @@ async function parseXml(filename) {
 	console.dir("Filename: ");
 	console.dir(filename);
 	try {
-    	var xmlfile = "xml/jobs.xml";
+    	var xmlfile = "./xml/jobs.xml";
     	fs.readFile(xmlfile, "utf-8", function (error, text) {
         	if (error) {
             	throw error;
@@ -234,7 +234,7 @@ app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 	try {
 		
 		const getXmlJobsFile = await getData(queryObject.url);
-		//const parseThisXml = await parseXml(request.params.filename);
+		const parseThisXml = await parseXml(request.params.filename);
 		//const sendThisFile = await sendFile(request.params.folder, request.params.filename);
 		console.dir(fileList("xml"));
 		console.dir(fileList("csv"));
