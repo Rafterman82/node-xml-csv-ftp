@@ -137,7 +137,7 @@ async function parseXml(filename) {
                 			"job_detail_url"
                 		]
                 	})
-                	let fileNameString = "csv/" + filename + "_" + dateString + ".csv";
+                	let fileNameString = "./csv/" + filename + "_" + dateString + ".csv";
                 	console.dir("The filename string is");
                 	console.dir(fileNameString);
 					writer.pipe(fs.createWriteStream(fileNameString));
