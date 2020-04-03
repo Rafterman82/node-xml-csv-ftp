@@ -104,7 +104,7 @@ async function parseXml(filename) {
             	parser.parseString(text, function (err, result) {
                 	console.dir(result);
                 	//console.dir(result.jobs.job.length);
-                	/*var jobsObject = result.jobs.job;
+                	var jobsObject = result.jobs.job;
 
                 	var jobs = [];
 
@@ -137,7 +137,7 @@ async function parseXml(filename) {
                 			"job_detail_url"
                 		]
                 	})
-                	let fileNameString = filename + "_" + dateString + ".csv";
+                	let fileNameString = "csv/" + filename + "_" + dateString + ".csv";
                 	console.dir("The filename string is");
                 	console.dir(fileNameString);
 					writer.pipe(fs.createWriteStream(fileNameString));
@@ -176,7 +176,7 @@ async function parseXml(filename) {
                 	}
                 	writer.end();
                 	//console.dir(jobs);
-                	return fileNameString;*/
+                	return fileNameString;
             	});
         	}
         });
@@ -232,16 +232,16 @@ app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 		fs.readdir(directoryPath, function (err, files) {
 		    //handling error
 		    if (err) {
-		        return console.log('Unable to scan directory: ' + err);
+		        return console.dir('Unable to scan directory: ' + err);
 		    } 
 		    //listing all files using forEach
 		    files.forEach(function (file) {
 		        // Do whatever you want to do with the file
-		        console.log(file); 
+		        console.dir(file); 
 		    });
 		});
-		
-		//const parseThisXml = await parseXml(request.params.filename);
+
+		const parseThisXml = await parseXml(request.params.filename);
 		//const sendThisFile = await sendFile(request.params.folder, request.params.filename);
 		response.send({"success": "true"});
 	} catch(e) {
