@@ -202,7 +202,6 @@ async function sendFile(folder, file) {
 			console.dir("Made connection");
 			let remote = 'Import/' + folder + '/' + file;
 			let data = fs.createReadStream(file);
-			let remote = '/path/to/remote/file.txt';
 			return sftp.put(data, remote);
 		}).then(() => {
 			return sftp.end();
