@@ -176,7 +176,33 @@ async function parseXml(filename) {
                 	}
                 	writer.end();
                 	//console.dir(jobs);
-                	return "test";
+
+					try {
+						console.dir("making sftp connection");
+						// access SFTP site
+						sftp.connect({
+							host: marketingCloud.sftpUrl,
+							port: marketingCloud.sftpPort,
+							username: marketingCloud.sftpUser,
+							password: marketingCloud.sftpPassword
+						}).then(() => {
+							console.dir("Made connection");
+							let remote = 'Import/XML_Jobs_Feed_DEV/' + fileNameString;
+							let data = fs.createReadStream(fileNameString);
+							sftp.put(data, remote);
+						}).then(() => {
+							sftp.end();
+						})
+						.catch(err => {
+							console.error(err.message);
+						});
+
+					} catch(e) {
+
+					}
+
+
+                	//return fileNameString;
             	});
         	}
         });
@@ -233,9 +259,9 @@ app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 	try {
 		
 		const getXmlJobsFile = await getData(queryObject.url);
-		const parseThisXml = await parseXml(request.params.filename);
+		const parseThisXml = await parseXml(getXmlJobsFile);
 		console.dir(parseThisXml);
-		const sendThisFile = await sendFile(request.params.folder, "csv/job_feed_" + dateString + ".csv");
+		//const sendThisFile = await sendFile(request.params.folder, parseThisXml);
 		console.dir(fileList("xml"));
 		console.dir(fileList("csv"));
 		response.send({"success": "true"});
