@@ -135,7 +135,7 @@ async function parseXml(filename) {
                 		]
                 	})
 
-					writer.pipe(fs.createWriteStream("jobs_feed_" + dateString + ".csv"));
+					writer.pipe(fs.createWriteStream("jobs_feed.csv"));
 
                 	for ( var i = 0; i < jobsObject.length; i++) {
                 		if ( jobsObject[i] ) {
@@ -174,7 +174,6 @@ async function parseXml(filename) {
 
             	});
 
-            	return "job_feed_" + dateString + ".csv";
         	} else {
         		console.dir("there was an error generating the csv file");
         	}
@@ -184,11 +183,11 @@ async function parseXml(filename) {
 	}
 }
 
-async function sendFile(folder, file) {
+async function sendFile(folder) {
 	console.dir("Folder (185)");
 	console.dir(folder);
 	console.dir("Filename (187)");
-	console.dir(file);
+	var ftpFile = "jobs_feed_" + dateString + ".csv";
 	try {
 		console.dir("making sftp connection");
 		// access SFTP site
@@ -199,8 +198,8 @@ async function sendFile(folder, file) {
 			password: marketingCloud.sftpPassword
 		}).then(() => {
 			console.dir("Made connection");
-			let remote = 'Import/' + folder + '/' + file;
-			let data = fs.createReadStream(file);
+			let remote = 'Import/' + folder + '/' + ftpFile;
+			let data = fs.createReadStream(ftpFile);
 			return sftp.put(data, remote);
 		}).then(() => {
 			return sftp.end();
@@ -230,7 +229,7 @@ app.get('/save-xml/', async function(request, response) {
 
 	try {
 		
-		const getXmlJobsFile = await getData(queryObject.url);
+		await getData(queryObject.url);
 		const testFolder = './';
 		const fs = require('fs');
 
@@ -251,7 +250,7 @@ app.get('/convert-csv/', async function(request, response) {
 
 	try {
 		
-		const parseThisXml = await parseXml(getXmlJobsFile);
+		await parseXml(getXmlJobsFile);
 		response.send({"success": "true"});
 
 		fs.readdir(testFolder, (err, files) => {
@@ -270,7 +269,7 @@ app.get('/sent-to-ftp/:folder/', async function(request, response) {
 
 	try {
 		
-		const sendThisFile = await sendFile(request.params.folder);
+		await sendFile(request.params.folder);
 		const testFolder = './';
 		const fs = require('fs');
 
