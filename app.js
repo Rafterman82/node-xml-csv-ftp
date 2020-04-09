@@ -47,9 +47,7 @@ var marketingCloud = {
 };
 
 console.dir(marketingCloud);
-console.log("Current working directory: ", 
-          process.cwd());
-
+console.log("Current working directory: ", process.cwd());
 
 // Configure Express
 app.set('port', process.env.PORT || 3000);
@@ -175,34 +173,10 @@ async function parseXml(filename) {
                 		}
                 	}
                 	writer.end();
-                	//console.dir(jobs);
-
-					try {
-						console.dir("making sftp connection");
-						// access SFTP site
-						sftp.connect({
-							host: marketingCloud.sftpUrl,
-							port: marketingCloud.sftpPort,
-							username: marketingCloud.sftpUser,
-							password: marketingCloud.sftpPassword
-						}).then(() => {
-							console.dir("Made connection");
-							let remote = 'Import/XML_Jobs_Feed_DEV/' + fileNameString;
-							let data = fs.createReadStream(fileNameString);
-							sftp.put(data, remote);
-						}).then(() => {
-							sftp.end();
-						})
-						.catch(err => {
-							console.error(err.message);
-						});
-
-					} catch(e) {
-
-					}
+                	console.dir(jobs[0]);
 
 
-                	//return fileNameString;
+                	return fileNameString;
             	});
         	}
         });
@@ -262,8 +236,14 @@ app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 		const parseThisXml = await parseXml(getXmlJobsFile);
 		console.dir(parseThisXml);
 		//const sendThisFile = await sendFile(request.params.folder, parseThisXml);
-		console.dir(fileList("xml"));
-		console.dir(fileList("csv"));
+		const testFolder = './';
+		const fs = require('fs');
+
+		fs.readdir(testFolder, (err, files) => {
+		  files.forEach(file => {
+		    console.log(file);
+		  });
+		});
 		response.send({"success": "true"});
 	} catch(e) {
 		console.dir(e);
