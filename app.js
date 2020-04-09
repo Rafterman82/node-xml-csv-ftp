@@ -96,13 +96,7 @@ async function parseXml(filename) {
 	try {
     	var xmlfile = "jobs_new.xml";
     	fs.readFile(xmlfile, "utf-8", function (error, text) {
-        	if (error) {
-            	throw error;
-        	} else {
-
-            	var fileNameString = "job_feed_" + dateString + ".csv";
-            	console.dir("The filename string is");
-            	console.dir(fileNameString);
+        	if (!error) {
 
             	parser.parseString(text, function (err, result) {
                 	console.dir(result);
@@ -141,7 +135,7 @@ async function parseXml(filename) {
                 		]
                 	})
 
-					writer.pipe(fs.createWriteStream(fileNameString));
+					writer.pipe(fs.createWriteStream("job_feed_" + dateString + ".csv"));
 
                 	for ( var i = 0; i < jobsObject.length; i++) {
                 		if ( jobsObject[i] ) {
@@ -180,7 +174,9 @@ async function parseXml(filename) {
 
             	});
 
-            	return fileNameString;
+            	return "job_feed_" + dateString + ".csv";
+        	} else {
+        		console.dir("there was an error generating the csv file");
         	}
         });
 	} catch(error) {
