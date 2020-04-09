@@ -78,7 +78,7 @@ async function getData(url) {
   try {
     const response = await axios.get("https://www." + url);
     const data = response.data;
-    fs.writeFile('./xml/jobs_new.xml', data, function (err) {
+    fs.writeFile('jobs_new.xml', data, function (err) {
   		if (err) {
   			return console.log(err);
   		} else {
@@ -96,7 +96,7 @@ async function parseXml(filename) {
 	console.dir("Filename: ");
 	console.dir(filename);
 	try {
-    	var xmlfile = "./xml/jobs_new.xml";
+    	var xmlfile = "jobs_new.xml";
     	fs.readFile(xmlfile, "utf-8", function (error, text) {
         	if (error) {
             	throw error;
@@ -137,7 +137,7 @@ async function parseXml(filename) {
                 			"job_detail_url"
                 		]
                 	})
-                	let fileNameString = "csv/job_feed_" + dateString + ".csv";
+                	let fileNameString = "job_feed_" + dateString + ".csv";
                 	console.dir("The filename string is");
                 	console.dir(fileNameString);
 					writer.pipe(fs.createWriteStream(fileNameString));
