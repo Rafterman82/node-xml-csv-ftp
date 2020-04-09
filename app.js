@@ -186,7 +186,7 @@ async function sendFile(folder) {
 	console.dir("Folder (185)");
 	console.dir(folder);
 	console.dir("Filename (187)");
-	var ftpFile = "jobs_feed_" + dateString + ".csv";
+	var ftpFile = "jobs_feed.csv";
 	try {
 		console.dir("making sftp connection");
 		// access SFTP site
