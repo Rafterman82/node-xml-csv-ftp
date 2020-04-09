@@ -91,8 +91,7 @@ async function getData(url) {
 
 
 async function parseXml() {
-	console.dir("Filename: ");
-	console.dir(filename);
+
 	try {
     	var xmlfile = "jobs_new.xml";
     	fs.readFile(xmlfile, "utf-8", function (error, text) {
