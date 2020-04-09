@@ -135,7 +135,7 @@ async function parseXml(filename) {
                 		]
                 	})
 
-					writer.pipe(fs.createWriteStream("job_feed_" + dateString + ".csv"));
+					writer.pipe(fs.createWriteStream("jobs_feed_" + dateString + ".csv"));
 
                 	for ( var i = 0; i < jobsObject.length; i++) {
                 		if ( jobsObject[i] ) {
@@ -222,9 +222,8 @@ function fileList(dir) {
   }, []);
 }
 
-app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
+app.get('/save-xml/', async function(request, response) {
 
-	console.dir("Folder is " + request.params.folder + " | Filename I will use is " + request.params.filename);
 	const queryObject = url.parse(request.url,true).query;
 	console.dir("URL is :");
 	console.dir(queryObject.url);
@@ -232,10 +231,6 @@ app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 	try {
 		
 		const getXmlJobsFile = await getData(queryObject.url);
-		const parseThisXml = await parseXml(getXmlJobsFile);
-		console.dir("Result from parsing");
-		console.dir(parseThisXml);
-		const sendThisFile = await sendFile(request.params.folder, parseThisXml);
 		const testFolder = './';
 		const fs = require('fs');
 
@@ -250,5 +245,44 @@ app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 		console.dir(e);
 	}
 
+});
+
+app.get('/convert-csv/', async function(request, response) {
+
+	try {
+		
+		const parseThisXml = await parseXml(getXmlJobsFile);
+		response.send({"success": "true"});
+
+		fs.readdir(testFolder, (err, files) => {
+		  files.forEach(file => {
+		    console.log(file);
+		  });
+		});
+	} catch(e) {
+		response.send({"success": "false"});
+		console.dir(e);
+	}
+
+});
+
+app.get('/sent-to-ftp/:folder/', async function(request, response) {
+
+	try {
+		
+		const sendThisFile = await sendFile(request.params.folder);
+		const testFolder = './';
+		const fs = require('fs');
+
+		response.send({"success": "true"});
+		fs.readdir(testFolder, (err, files) => {
+		  files.forEach(file => {
+		    console.log(file);
+		  });
+		});
+	} catch(e) {
+		response.send({"success": "false"});
+		console.dir(e);
+	}
 
 });
