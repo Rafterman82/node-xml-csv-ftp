@@ -175,9 +175,9 @@ async function parseXml(filename) {
                 	writer.end();
                 	console.dir(jobs[0]);
 
-
-                	return fileNameString;
             	});
+
+            	return fileNameString;
         	}
         });
 	} catch(error) {
@@ -234,8 +234,9 @@ app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 		
 		const getXmlJobsFile = await getData(queryObject.url);
 		const parseThisXml = await parseXml(getXmlJobsFile);
+		console.dir("Result from parsing");
 		console.dir(parseThisXml);
-		//const sendThisFile = await sendFile(request.params.folder, parseThisXml);
+		const sendThisFile = await sendFile(request.params.folder, parseThisXml);
 		const testFolder = './';
 		const fs = require('fs');
 
@@ -246,6 +247,7 @@ app.get('/readFtpFolder/:folder/:filename/', async function(request, response) {
 		});
 		response.send({"success": "true"});
 	} catch(e) {
+		response.send({"success": "false"});
 		console.dir(e);
 	}
 
