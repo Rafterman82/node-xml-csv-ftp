@@ -249,7 +249,7 @@ app.get('/convert-csv/', async function(request, response) {
 
 });
 
-app.get('/sent-to-ftp/:folder/', async function(request, response) {
+app.get('/send-to-ftp/:folder/', async function(request, response) {
 
 	try {
 		
