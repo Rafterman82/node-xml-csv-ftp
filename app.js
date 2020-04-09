@@ -36,7 +36,7 @@ let minutes = date_ob.getMinutes();
 // current seconds
 let seconds = date_ob.getSeconds();
 
-let dateString = year + month + date + "_" + hours + minutes  + seconds;
+let dateString = year + month + date;
 
 // access Heroku variables
 var marketingCloud = {
@@ -134,7 +134,7 @@ async function parseXml() {
                 		]
                 	})
 
-					writer.pipe(fs.createWriteStream("jobs_feed.csv"));
+					writer.pipe(fs.createWriteStream("jobs_feed_" + dateString + ".csv"));
 
                 	for ( var i = 0; i < jobsObject.length; i++) {
                 		if ( jobsObject[i] ) {
@@ -186,7 +186,7 @@ async function sendFile(folder) {
 	console.dir("Folder (185)");
 	console.dir(folder);
 	console.dir("Filename (187)");
-	var ftpFile = "jobs_feed.csv";
+	var ftpFile = "jobs_feed_" + dateString + ".csv";
 	try {
 		console.dir("making sftp connection");
 		// access SFTP site
@@ -229,14 +229,6 @@ app.get('/save-xml/', async function(request, response) {
 	try {
 		
 		await getData(queryObject.url);
-		const testFolder = './';
-		const fs = require('fs');
-
-		fs.readdir(testFolder, (err, files) => {
-		  files.forEach(file => {
-		    console.log(file);
-		  });
-		});
 		response.send({"success": "true"});
 	} catch(e) {
 		response.send({"success": "false"});
@@ -248,15 +240,8 @@ app.get('/save-xml/', async function(request, response) {
 app.get('/convert-csv/', async function(request, response) {
 
 	try {
-		
 		await parseXml();
 		response.send({"success": "true"});
-
-		fs.readdir(testFolder, (err, files) => {
-		  files.forEach(file => {
-		    console.log(file);
-		  });
-		});
 	} catch(e) {
 		response.send({"success": "false"});
 		console.dir(e);
@@ -269,15 +254,7 @@ app.get('/sent-to-ftp/:folder/', async function(request, response) {
 	try {
 		
 		await sendFile(request.params.folder);
-		const testFolder = './';
-		const fs = require('fs');
-
 		response.send({"success": "true"});
-		fs.readdir(testFolder, (err, files) => {
-		  files.forEach(file => {
-		    console.log(file);
-		  });
-		});
 	} catch(e) {
 		response.send({"success": "false"});
 		console.dir(e);
