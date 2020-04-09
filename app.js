@@ -99,6 +99,11 @@ async function parseXml(filename) {
         	if (error) {
             	throw error;
         	} else {
+
+            	var fileNameString = "job_feed_" + dateString + ".csv";
+            	console.dir("The filename string is");
+            	console.dir(fileNameString);
+
             	parser.parseString(text, function (err, result) {
                 	console.dir(result);
                 	//console.dir(result.jobs.job.length);
@@ -135,9 +140,7 @@ async function parseXml(filename) {
                 			"job_detail_url"
                 		]
                 	})
-                	let fileNameString = "job_feed_" + dateString + ".csv";
-                	console.dir("The filename string is");
-                	console.dir(fileNameString);
+
 					writer.pipe(fs.createWriteStream(fileNameString));
 
                 	for ( var i = 0; i < jobsObject.length; i++) {
