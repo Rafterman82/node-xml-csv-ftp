@@ -90,7 +90,7 @@ async function getData(url) {
 };
 
 
-async function parseXml(filename) {
+async function parseXml() {
 	console.dir("Filename: ");
 	console.dir(filename);
 	try {
@@ -250,7 +250,7 @@ app.get('/convert-csv/', async function(request, response) {
 
 	try {
 		
-		await parseXml(getXmlJobsFile);
+		await parseXml();
 		response.send({"success": "true"});
 
 		fs.readdir(testFolder, (err, files) => {
