@@ -189,7 +189,7 @@ async function sendFile(folder) {
 	var ftpFile = "jobs_feed_" + dateString + ".csv";
 
 	try {
-		console.dir("making sftp connection");ß
+		console.dir("making sftp connection");
 		// access SFTP site
 		sftp.connect({
 			host: marketingCloud.sftpUrl,
