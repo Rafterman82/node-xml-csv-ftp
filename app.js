@@ -185,10 +185,20 @@ async function parseXml() {
 async function sendFile(folder) {
 	console.dir("Folder (185)");
 	console.dir(folder);
-	console.dir("Filename (187)");
+
 	var ftpFile = "jobs_feed_" + dateString + ".csv";
+	let remote = 'Import/' + folder + '/' + ftpFile;
+	let data = fs.createReadStream(ftpFile);
+
+	console.dir("Filename (187)");
+	console.dir(ftpFile);
+	console.dir("Remote");
+	console.dir(remote);
+	console.dir("Data");
+	console.dir(data);
+
 	try {
-		console.dir("making sftp connection");
+		console.dir("making sftp connection");ß
 		// access SFTP site
 		sftp.connect({
 			host: marketingCloud.sftpUrl,
@@ -197,8 +207,6 @@ async function sendFile(folder) {
 			password: marketingCloud.sftpPassword
 		}).then(() => {
 			console.dir("Made connection");
-			let remote = 'Import/' + folder + '/' + ftpFile;
-			let data = fs.createReadStream(ftpFile);
 			return sftp.put(data, remote);
 		}).then(() => {
 			console.dir("Ending connection");
