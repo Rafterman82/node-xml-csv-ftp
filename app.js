@@ -134,7 +134,7 @@ async function parseXml() {
                 		]
                 	})
 
-					writer.pipe(fs.createWriteStream("jobs_feed_" + dateString + ".csv"));
+					writer.pipe(fs.createWriteStream("jobs_feed.csv"));
 
                 	for ( var i = 0; i < jobsObject.length; i++) {
                 		if ( jobsObject[i] ) {
@@ -186,7 +186,7 @@ async function sendFile(folder) {
 	console.dir("Folder (185)");
 	console.dir(folder);
 
-	var ftpFile = "jobs_feed_" + dateString + ".csv";
+	var ftpFile = "jobs_feed.csv";
 	let remote = 'Import/' + folder + '/' + ftpFile;
 	let data = fs.createReadStream(ftpFile);
 
