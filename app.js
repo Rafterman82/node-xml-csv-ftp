@@ -194,8 +194,8 @@ async function sendFile(folder) {
 	console.dir(ftpFile);
 	console.dir("Remote");
 	console.dir(remote);
-	console.dir("Data");
-	console.dir(data);
+	//console.dir("Data");
+	//console.dir(data);
 
 	try {
 		console.dir("making sftp connection");ß
@@ -207,11 +207,12 @@ async function sendFile(folder) {
 			password: marketingCloud.sftpPassword
 		}).then(() => {
 			console.dir("Made connection");
-			return sftp.put(data, remote);
+			return sftp.fastPut(data,remote);
 		}).then(() => {
 			console.dir("Ending connection");
 			return sftp.end();
 		}).catch(err => {
+			console.dir("An error occured during FTP transfer");
 			console.error(err.message);
 		});
 
