@@ -134,7 +134,7 @@ async function parseXml() {
                 		]
                 	})
 
-					writer.pipe(fs.createWriteStream("jobs_feed.csv"));
+					writer.pipe(fs.createWriteStream("jobs_feed_" + dateString + ".csv"));
 
                 	for ( var i = 0; i < jobsObject.length; i++) {
                 		if ( jobsObject[i] ) {
@@ -186,7 +186,7 @@ async function sendFile(folder) {
 	console.dir("Folder (185)");
 	console.dir(folder);
 
-	var ftpFile = "jobs_feed.csv";
+	var ftpFile = "jobs_feed_" + dateString + ".csv";
 	let remote = 'Import/' + folder + '/' + ftpFile;
 	let data = fs.createReadStream(ftpFile);
 
@@ -207,12 +207,13 @@ async function sendFile(folder) {
 			password: marketingCloud.sftpPassword
 		}).then(() => {
 			console.dir("Made connection");
-			return sftp.fastPut(data,remote);
+			let remote = 'Import/' + folder + '/' + ftpFile;
+			let data = fs.createReadStream(ftpFile);
+			return sftp.put(data, remote);
 		}).then(() => {
-			console.dir("Ending connection");
 			return sftp.end();
-		}).catch(err => {
-			console.dir("An error occured during FTP transfer");
+		})
+		.catch(err => {
 			console.error(err.message);
 		});
 
