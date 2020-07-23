@@ -72,11 +72,11 @@ http.createServer(app).listen(app.get('port'), function(){
 
 app.get('/', (request, response) => response.send('Hello World!'));
 
-async function getData(url) {
+async function getData(url, country) {
   try {
     const response = await axios.get("https://www." + url);
     const data = response.data;
-    fs.writeFile('jobs_new.xml', data, function (err) {
+    fs.writeFile('jobs_new_' + country.toLowerCase() + '.xml', data, function (err) {
   		if (err) {
   			return console.log(err);
   		} else {
@@ -90,10 +90,10 @@ async function getData(url) {
 };
 
 
-async function parseXml() {
+async function parseXml(country) {
 
 	try {
-    	var xmlfile = "jobs_new.xml";
+    	var xmlfile = "jobs_new_" + country.toLowerCase() + ".xml";
     	fs.readFile(xmlfile, "utf-8", function (error, text) {
         	if (!error) {
 
@@ -134,7 +134,7 @@ async function parseXml() {
                 		]
                 	})
 
-					writer.pipe(fs.createWriteStream("jobs_feed_" + dateString + ".csv"));
+					writer.pipe(fs.createWriteStream("jobs_feed_" + country.toLowerCase() + "_" + dateString + ".csv"));
 
                 	for ( var i = 0; i < jobsObject.length; i++) {
                 		if ( jobsObject[i] ) {
@@ -182,11 +182,11 @@ async function parseXml() {
 	}
 }
 
-async function sendFile(folder) {
+async function sendFile(folder, country) {
 	console.dir("Folder (185)");
 	console.dir(folder);
 
-	var ftpFile = "jobs_feed_" + dateString + ".csv";
+	var ftpFile = "jobs_feed_" + country.toLowerCase() + "_" + dateString + ".csv";
 
 	try {
 		console.dir("making sftp connection");
@@ -224,13 +224,18 @@ function fileList(dir) {
 
 app.get('/save-xml/', async function(request, response) {
 
-	const queryObject = url.parse(request.url,true).query;
-	console.dir("URL is :");
+	const queryObject = url.parse(request.url,true).query
+	console.dir("Query URL is :");
 	console.dir(queryObject.url);
+
+	console.dir("Query country is :");
+	console.dir(queryObject.country);
+
+
 
 	try {
 		
-		await getData(queryObject.url);
+		await getData(queryObject.url, queryObject.country);
 		response.send({"success": "true"});
 	} catch(e) {
 		response.send({"success": "false"});
@@ -241,8 +246,11 @@ app.get('/save-xml/', async function(request, response) {
 
 app.get('/convert-csv/', async function(request, response) {
 
+	const queryObject = url.parse(request.url,true).query
+	console.dir("Query URL is :");
+	console.dir(queryObject.country);
 	try {
-		await parseXml();
+		await parseXml(queryObject.country);
 		response.send({"success": "true"});
 	} catch(e) {
 		response.send({"success": "false"});
@@ -253,9 +261,13 @@ app.get('/convert-csv/', async function(request, response) {
 
 app.get('/send-to-ftp/:folder/', async function(request, response) {
 
+	const queryObject = url.parse(request.url,true).query
+	console.dir("Query country is :");
+	console.dir(queryObject.country);
+
 	try {
 		
-		await sendFile(request.params.folder);
+		await sendFile(request.params.folder, country);
 		response.send({"success": "true"});
 	} catch(e) {
 		response.send({"success": "false"});
