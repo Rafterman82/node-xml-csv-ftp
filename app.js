@@ -267,7 +267,7 @@ app.get('/send-to-ftp/:folder/', async function(request, response) {
 
 	try {
 		
-		await sendFile(request.params.folder, country);
+		await sendFile(request.params.folder, queryObject.country);
 		response.send({"success": "true"});
 	} catch(e) {
 		response.send({"success": "false"});
