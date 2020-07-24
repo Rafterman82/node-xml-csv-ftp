@@ -186,7 +186,9 @@ async function sendFile(folder, country) {
 	console.dir("Folder (185)");
 	console.dir(folder);
 
-	var ftpFile = "jobs_feed_" + country.toLowerCase() + "_" + dateString + ".csv";
+	var ftpFile = "jobs_feed_" + country + "_" + dateString + ".csv";
+	console.dir("The FTP File is:");
+	console.dir(ftpFile);
 
 	try {
 		console.dir("making sftp connection");
@@ -199,7 +201,11 @@ async function sendFile(folder, country) {
 		}).then(() => {
 			console.dir("Made connection");
 			let remote = 'Import/' + folder + '/' + ftpFile;
+			console.dir("Remote file is:");
+			console.dir(remote);
 			let data = fs.createReadStream(ftpFile);
+			console.dir("Stream var is :");
+			console.dir(data);
 			return sftp.put(data, remote);
 		}).then(() => {
 			return sftp.end();
